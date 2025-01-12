@@ -1,34 +1,35 @@
 /* Spinner styling */
 .spinner {
-  border: 4px solid #f3f3f3; /* Light gray */
-  border-top: 4px solid #ff6347; /* Red color */
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-  display: inline-block; /* Display inline with the text */
-}
-
-/* Animation for the spinner */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Loading container */
-.loading-container {
-  display: none; /* Initially hidden */
-  text-align: center;
-  font-size: 16px;
-  color: #ff6347;
-}
-
-/* Loading message styling */
-#loading-message {
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  display: inline-block;
-  color: #333;
-}
+    border: 4px solid #f3f3f3; /* Light gray */
+    border-top: 4px solid #ff6347; /* Red color */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    display: inline-block; /* Display inline with the text */
+  }
+  
+  /* Animation for the spinner */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .container {
+    text-align: center;
+  }
+  
+  button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #e53e3e;
+  }
+  
