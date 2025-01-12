@@ -32,9 +32,7 @@ async function fetchCatImage() {
       }
     });
     const data = await response.json();
-    console.log(data);
     catImage.src = data[0].url;  // Set the image source to the fetched cat image URL
-    console.log(data[0]);
   } catch (error) {
     console.error("Error fetching cat image:", error);
   } finally {
@@ -43,64 +41,69 @@ async function fetchCatImage() {
 }
 
 // POST: Upload a new cat image
-async function updateCatImage(imageId, tag) {
-    const data = {
-      tags: [tag] // Tags need to be provided as an array
-    };
+async function uploadCatImage(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    showLoadingSpinner();
   
     try {
-      const response = await fetch(`https://api.thecatapi.com/v1/images/${imageId}`, {
-        method: 'PUT',
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey // API Key for authentication
+          'x-api-key': apiKey
         },
-        body: JSON.stringify(data)
+        body: formData
       });
   
       if (response.ok) {
-        const updatedData = await response.json();
-        // Check if tags are updated successfully
-        alert(`Updated tags: ${updatedData.tags.join(', ')}`);
+        const data = await response.json();
+        catImage.src = data.url;  // Display the uploaded image
+  
+        // Show the success message after a brief delay
+        setTimeout(() => {
+          alert("Cat image uploaded successfully!");
+        }, 500);
       } else {
-        // Handle response errors (e.g., invalid image ID)
         const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+        alert(`Error uploading image: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Error updating cat image:", error);
+      console.error("Error uploading cat image:", error);
+    } finally {
+      hideLoadingSpinner();
     }
   }
 
-// PUT: Update an uploaded cat image's metadata (e.g., adding a tag)
+// PUT/PATCH: Update a cat image's metadata (e.g., adding a tag)
 async function updateCatImage(imageId, tag) {
-    const data = { tags: [tag] };
-  
-    try {
-      const response = await fetch(`https://api.thecatapi.com/v1/images/${imageId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': 'YOUR_API_KEY', // Replace with your API key
-        },
-        body: JSON.stringify(data)
-      });
-  
-      if (response.ok) {
-        const updatedData = await response.json();
-        console.log(`Tags updated: ${updatedData.tags}`);
-      } else {
-        const errorData = await response.json();
-        console.error(`Error updating image: ${errorData.message}`);
-      }
-    } catch (error) {
-      console.error('Error:', error);
+  const data = { tags: [tag] };
+
+  showLoadingSpinner();
+
+  try {
+    const response = await fetch(`https://api.thecatapi.com/v1/images/${imageId}`, {
+      method: 'PATCH',  // Use PATCH to update metadata (like tags)
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const updatedData = await response.json();
+      alert(`Updated tags: ${updatedData.tags.join(', ')}`);
+    } else {
+      const errorData = await response.json();
+      alert(`Error: ${errorData.message}`);
     }
+  } catch (error) {
+    console.error("Error updating cat image:", error);
+  } finally {
+    hideLoadingSpinner();
   }
-  
-  // Example: Update tags for image "9vf"
-  updateCatImage("9vf", "cute");
-  
+}
 
 // Event listener for the "Get a New Cat" button (GET)
 newCatBtn.addEventListener("click", () => {
@@ -123,7 +126,7 @@ uploadCatBtn.addEventListener("click", () => {
   fileInput.click();  // Trigger the file input dialog
 });
 
-// Event listener for the "Update Cat Image" button (PUT)
+// Event listener for the "Update Cat Image" button (PATCH)
 updateCatBtn.addEventListener("click", () => {
   const imageId = prompt("Enter the image ID to update:");
   const tag = prompt("Enter the tag to add to the image:");
