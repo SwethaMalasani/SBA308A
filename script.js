@@ -43,51 +43,64 @@ async function fetchCatImage() {
 }
 
 // POST: Upload a new cat image
-async function uploadCatImage(imageFile) {
-  const formData = new FormData();
-  formData.append('file', imageFile);
-
-  try {
-    const response = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey
-      },
-      body: formData
-    });
-    const data = await response.json();
-    if (data.url) {
-      catImage.src = data.url;
-      alert("Cat image uploaded successfully!");
+async function updateCatImage(imageId, tag) {
+    const data = {
+      tags: [tag] // Tags need to be provided as an array
+    };
+  
+    try {
+      const response = await fetch(`https://api.thecatapi.com/v1/images/${imageId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey // API Key for authentication
+        },
+        body: JSON.stringify(data)
+      });
+  
+      if (response.ok) {
+        const updatedData = await response.json();
+        // Check if tags are updated successfully
+        alert(`Updated tags: ${updatedData.tags.join(', ')}`);
+      } else {
+        // Handle response errors (e.g., invalid image ID)
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating cat image:", error);
     }
-  } catch (error) {
-    console.error("Error uploading cat image:", error);
   }
-}
 
 // PUT: Update an uploaded cat image's metadata (e.g., adding a tag)
 async function updateCatImage(imageId, tag) {
-  const data = {
-    tags: [tag]
-  };
-
-  try {
-    const response = await fetch(updateUrl.replace('{image_id}', imageId), {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey
-      },
-      body: JSON.stringify(data)
-    });
-    const updatedData = await response.json();
-    if (updatedData.tags) {
-      alert(`Updated tags: ${updatedData.tags}`);
+    const data = { tags: [tag] };
+  
+    try {
+      const response = await fetch(`https://api.thecatapi.com/v1/images/${imageId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'YOUR_API_KEY', // Replace with your API key
+        },
+        body: JSON.stringify(data)
+      });
+  
+      if (response.ok) {
+        const updatedData = await response.json();
+        console.log(`Tags updated: ${updatedData.tags}`);
+      } else {
+        const errorData = await response.json();
+        console.error(`Error updating image: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-  } catch (error) {
-    console.error("Error updating cat image:", error);
   }
-}
+  
+  // Example: Update tags for image "9vf"
+  updateCatImage("9vf", "cute");
+  
 
 // Event listener for the "Get a New Cat" button (GET)
 newCatBtn.addEventListener("click", () => {
